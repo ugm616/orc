@@ -1,0 +1,164 @@
+# Orc Social .htaccess for shared hosting
+# Tor-only enforcement and security headers
+
+# Enable rewrite engine
+RewriteEngine On
+
+# ============================================================================
+# TOR-ONLY ENFORCEMENT (Mode B - IP Allowlist)
+# ============================================================================
+# Uncomment the following section to enable Tor-only mode with IP allowlist
+# This is for Mode B deployment where a Tor edge VPS forwards traffic
+
+# Allow localhost and common Tor exit IPs
+# SetEnvIF REMOTE_ADDR "^127\.0\.0\.1$" allowed
+# SetEnvIF REMOTE_ADDR "^::1$" allowed
+# SetEnvIF REMOTE_ADDR "^10\.0\.0\." allowed
+# SetEnvIF REMOTE_ADDR "^172\.16\." allowed
+# SetEnvIF REMOTE_ADDR "^192\.168\." allowed
+
+# Add specific Tor exit node IPs here (update as needed)
+# SetEnvIF REMOTE_ADDR "^xxx\.xxx\.xxx\.xxx$" allowed
+
+# Deny all other IPs
+# Order Deny,Allow
+# Deny from all
+# Allow from env=allowed
+
+# Custom error page for blocked access
+# ErrorDocument 403 "Access denied. This site is only accessible via Tor."
+
+# ============================================================================
+# SECURITY HEADERS
+# ============================================================================
+
+# Prevent access to sensitive files
+<FilesMatch "\.(htaccess|htpasswd|ini|log|sh|sql|conf|config)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Security headers
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "DENY"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "no-referrer"
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; media-src 'none'; frame-src 'none';"
+    
+    # Prevent caching of sensitive pages
+    <FilesMatch "\.(php)$">
+        Header always set Cache-Control "no-cache, no-store, must-revalidate"
+        Header always set Pragma "no-cache"
+        Header always set Expires "0"
+    </FilesMatch>
+</IfModule>
+
+# ============================================================================
+# URL REWRITING
+# ============================================================================
+
+# Remove www redirect (for consistency)
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+
+# Route all requests to index.php unless file exists
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/static/
+RewriteRule ^(.*)$ /index.php [QSA,L]
+
+# ============================================================================
+# FILE PROTECTION
+# ============================================================================
+
+# Protect config directory
+<Directory "config">
+    Order Allow,Deny
+    Deny from all
+</Directory>
+
+# Protect includes directory  
+<Directory "includes">
+    Order Allow,Deny
+    Deny from all
+</Directory>
+
+# Protect templates directory
+<Directory "templates">
+    Order Allow,Deny
+    Deny from all
+</Directory>
+
+# Allow static files
+<Directory "static">
+    Order Allow,Deny
+    Allow from all
+    
+    # Cache static assets
+    <IfModule mod_expires.c>
+        ExpiresActive On
+        ExpiresByType text/css "access plus 1 year"
+        ExpiresByType application/javascript "access plus 1 year"
+        ExpiresByType image/png "access plus 1 year"
+        ExpiresByType image/jpg "access plus 1 year"
+        ExpiresByType image/jpeg "access plus 1 year"
+        ExpiresByType image/gif "access plus 1 year"
+        ExpiresByType image/svg+xml "access plus 1 year"
+    </IfModule>
+</Directory>
+
+# ============================================================================
+# PERFORMANCE OPTIMIZATION
+# ============================================================================
+
+# Enable compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+</IfModule>
+
+# Set charset
+AddDefaultCharset UTF-8
+
+# ============================================================================
+# ERROR HANDLING
+# ============================================================================
+
+# Custom error pages (optional)
+# ErrorDocument 404 /error/404.html
+# ErrorDocument 500 /error/500.html
+
+# ============================================================================
+# MODE-SPECIFIC CONFIGURATION
+# ============================================================================
+
+# For Mode A (User-space Tor): No additional configuration needed
+# For Mode B (Tor edge VPS): Uncomment the IP allowlist section above
+# For Mode C (Direct hosting): Use with caution, consider additional security
+
+# ============================================================================
+# DEVELOPMENT/PRODUCTION SETTINGS
+# ============================================================================
+
+# Hide server information
+ServerTokens Prod
+ServerSignature Off
+
+# Disable server-status and server-info
+<Location "/server-status">
+    Order Deny,Allow
+    Deny from all
+</Location>
+
+<Location "/server-info">
+    Order Deny,Allow
+    Deny from all
+</Location>
