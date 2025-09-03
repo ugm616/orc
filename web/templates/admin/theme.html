@@ -1,0 +1,310 @@
+{{define "content"}}
+<div class="card">
+    <h1 class="text-2xl font-bold mb-6">Theme Customization</h1>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Theme Editor -->
+        <div>
+            <form id="theme-form" action="/admin/theme/save" method="post">
+                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                
+                <!-- Colors Section -->
+                <div class="card">
+                    <h2 class="text-lg font-semibold mb-4">Colors</h2>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Primary Color</label>
+                            <input type="color" name="primary" value="{{.Theme.Colors.Primary}}" class="form-input h-12">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Secondary Color</label>
+                            <input type="color" name="secondary" value="{{.Theme.Colors.Secondary}}" class="form-input h-12">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Background Color</label>
+                            <input type="color" name="background" value="{{.Theme.Colors.Background}}" class="form-input h-12">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Surface Color</label>
+                            <input type="color" name="surface" value="{{.Theme.Colors.Surface}}" class="form-input h-12">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Text Color</label>
+                            <input type="color" name="text" value="{{.Theme.Colors.Text}}" class="form-input h-12">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Muted Text Color</label>
+                            <input type="color" name="textMuted" value="{{.Theme.Colors.TextMuted}}" class="form-input h-12">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Border Color</label>
+                            <input type="color" name="border" value="{{.Theme.Colors.Border}}" class="form-input h-12">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Success Color</label>
+                            <input type="color" name="success" value="{{.Theme.Colors.Success}}" class="form-input h-12">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Warning Color</label>
+                            <input type="color" name="warning" value="{{.Theme.Colors.Warning}}" class="form-input h-12">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Error Color</label>
+                            <input type="color" name="error" value="{{.Theme.Colors.Error}}" class="form-input h-12">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Typography Section -->
+                <div class="card">
+                    <h2 class="text-lg font-semibold mb-4">Typography</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Font Family</label>
+                            <select name="fontFamily" class="form-input">
+                                <option value="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" 
+                                    {{if eq .Theme.Typography.FontFamily "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"}}selected{{end}}>
+                                    System Sans Serif
+                                </option>
+                                <option value="Georgia, 'Times New Roman', Times, serif"
+                                    {{if eq .Theme.Typography.FontFamily "Georgia, 'Times New Roman', Times, serif"}}selected{{end}}>
+                                    System Serif
+                                </option>
+                                <option value="'Courier New', Courier, monospace"
+                                    {{if eq .Theme.Typography.FontFamily "'Courier New', Courier, monospace"}}selected{{end}}>
+                                    System Monospace
+                                </option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Font Size</label>
+                            <input type="text" name="fontSize" value="{{.Theme.Typography.FontSize}}" class="form-input" placeholder="16px">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Line Height</label>
+                            <input type="text" name="lineHeight" value="{{.Theme.Typography.LineHeight}}" class="form-input" placeholder="1.6">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Layout Section -->
+                <div class="card">
+                    <h2 class="text-lg font-semibold mb-4">Layout</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Max Width</label>
+                            <input type="text" name="maxWidth" value="{{.Theme.Layout.MaxWidth}}" class="form-input" placeholder="800px">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Spacing</label>
+                            <input type="text" name="spacing" value="{{.Theme.Layout.Spacing}}" class="form-input" placeholder="1rem">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Border Radius</label>
+                            <input type="text" name="borderRadius" value="{{.Theme.Layout.BorderRadius}}" class="form-input" placeholder="0.5rem">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Base Shadow</label>
+                            <input type="text" name="shadowBase" value="{{.Theme.Layout.ShadowBase}}" class="form-input" placeholder="0 1px 3px 0 rgba(0, 0, 0, 0.1)">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Large Shadow</label>
+                            <input type="text" name="shadowLg" value="{{.Theme.Layout.ShadowLg}}" class="form-input" placeholder="0 10px 15px -3px rgba(0, 0, 0, 0.1)">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Header Section -->
+                <div class="card">
+                    <h2 class="text-lg font-semibold mb-4">Header</h2>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <input type="checkbox" name="showLogo" value="true" class="mr-2" 
+                                {{if .Theme.Header.ShowLogo}}checked{{end}}>
+                            <label class="text-sm font-medium">Show Logo</label>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Logo Path</label>
+                            <input type="text" name="logoPath" value="{{.Theme.Header.LogoPath}}" class="form-input" placeholder="/static/images/logo.png">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Site Title</label>
+                            <input type="text" name="title" value="{{.Theme.Header.Title}}" class="form-input" placeholder="Orc Social">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Subtitle</label>
+                            <input type="text" name="subtitle" value="{{.Theme.Header.Subtitle}}" class="form-input" placeholder="Privacy-First Social Network">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Header Layout</label>
+                            <select name="headerLayout" class="form-input">
+                                <option value="center" {{if eq .Theme.Header.Layout "center"}}selected{{end}}>Center</option>
+                                <option value="left" {{if eq .Theme.Header.Layout "left"}}selected{{end}}>Left</option>
+                                <option value="right" {{if eq .Theme.Header.Layout "right"}}selected{{end}}>Right</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Footer Section -->
+                <div class="card">
+                    <h2 class="text-lg font-semibold mb-4">Footer</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Footer Text</label>
+                            <input type="text" name="footerText" value="{{.Theme.Footer.Text}}" class="form-input" placeholder="Powered by Orc Social">
+                        </div>
+                        
+                        <div id="footer-links">
+                            <label class="block text-sm font-medium mb-2">Footer Links</label>
+                            {{range $index, $link := .Theme.Footer.Links}}
+                                <div class="flex space-x-2 mb-2">
+                                    <input type="text" name="footerLinks" value="{{$link.Text}}" placeholder="Link Text" class="form-input">
+                                    <input type="text" name="footerLinks" value="{{$link.URL}}" placeholder="Link URL" class="form-input">
+                                    <button type="button" class="btn-danger" onclick="removeFooterLink(this)">Remove</button>
+                                </div>
+                            {{end}}
+                        </div>
+                        
+                        <button type="button" class="btn-secondary" onclick="addFooterLink()">Add Footer Link</button>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex space-x-4">
+                    <button type="button" class="btn" onclick="previewTheme()">Preview Changes</button>
+                    <button type="submit" class="btn">Save Theme</button>
+                    <button type="button" class="btn-secondary" onclick="resetTheme()">Reset to Defaults</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Live Preview -->
+        <div>
+            <div class="card">
+                <h2 class="text-lg font-semibold mb-4">Live Preview</h2>
+                
+                <div id="preview-container" class="border border-border rounded p-4 min-h-96">
+                    <div id="preview-content">
+                        <!-- Preview will be loaded here -->
+                        <div class="text-center text-muted">
+                            <p>Click "Preview Changes" to see your theme</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function addFooterLink() {
+    const container = document.getElementById('footer-links');
+    const div = document.createElement('div');
+    div.className = 'flex space-x-2 mb-2';
+    div.innerHTML = `
+        <input type="text" name="footerLinks" placeholder="Link Text" class="form-input">
+        <input type="text" name="footerLinks" placeholder="Link URL" class="form-input">
+        <button type="button" class="btn-danger" onclick="removeFooterLink(this)">Remove</button>
+    `;
+    container.appendChild(div);
+}
+
+function removeFooterLink(button) {
+    button.parentElement.remove();
+}
+
+async function previewTheme() {
+    const form = document.getElementById('theme-form');
+    const formData = new FormData(form);
+    
+    try {
+        const response = await fetch('/admin/theme/preview', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            // Apply CSS to preview container
+            const style = document.createElement('style');
+            style.textContent = result.css;
+            document.head.appendChild(style);
+            
+            // Update preview content
+            document.getElementById('preview-content').innerHTML = `
+                <div style="background-color: var(--color-surface); padding: var(--spacing); border-radius: var(--border-radius); margin-bottom: var(--spacing);">
+                    <h3 style="color: var(--color-primary); margin-bottom: 0.5rem;">Sample Post</h3>
+                    <p style="color: var(--color-text); margin-bottom: 1rem;">This is how a post would look with your theme.</p>
+                    <button style="background-color: var(--color-primary); color: var(--color-background); padding: 0.5rem 1rem; border: none; border-radius: var(--border-radius);">Like</button>
+                    <button style="background-color: var(--color-secondary); color: var(--color-background); padding: 0.5rem 1rem; border: none; border-radius: var(--border-radius); margin-left: 0.5rem;">Comment</button>
+                </div>
+                <div style="background-color: var(--color-surface); padding: var(--spacing); border-radius: var(--border-radius); border-left: 3px solid var(--color-secondary);">
+                    <p style="color: var(--color-text-muted); font-size: 0.9em; margin-bottom: 0.5rem;">Sample Comment</p>
+                    <p style="color: var(--color-text);">This is how a comment would appear.</p>
+                </div>
+            `;
+        } else {
+            alert('Preview failed: ' + result.message);
+        }
+    } catch (error) {
+        alert('Preview failed: ' + error.message);
+    }
+}
+
+async function resetTheme() {
+    if (confirm('Reset theme to defaults? This will lose all current customizations.')) {
+        const formData = new FormData();
+        formData.append('csrf_token', '{{.CSRFToken}}');
+        
+        try {
+            const response = await fetch('/admin/theme/reset', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (result.status === 'success') {
+                alert(result.message);
+                location.reload();
+            } else {
+                alert('Reset failed: ' + result.message);
+            }
+        } catch (error) {
+            alert('Reset failed: ' + error.message);
+        }
+    }
+}
+
+// Auto-preview on color changes
+document.querySelectorAll('input[type="color"]').forEach(input => {
+    input.addEventListener('change', previewTheme);
+});
+</script>
+{{end}}

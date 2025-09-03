@@ -1,0 +1,195 @@
+{{define "content"}}
+<div class="card">
+    <h1 class="text-2xl font-bold mb-6">Admin Dashboard</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Quick Stats -->
+        <div class="card">
+            <h2 class="text-lg font-semibold mb-4">Site Statistics</h2>
+            <div class="space-y-2">
+                <div class="flex justify-between">
+                    <span class="text-muted">Total Users:</span>
+                    <span id="total-users">-</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-muted">Total Posts:</span>
+                    <span id="total-posts">-</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-muted">Total Comments:</span>
+                    <span id="total-comments">-</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="card">
+            <h2 class="text-lg font-semibold mb-4">Quick Actions</h2>
+            <div class="space-y-2">
+                <a href="/admin/theme" class="btn w-full block text-center">Customize Theme</a>
+                <button class="btn-secondary w-full" onclick="exportData()">Export Data</button>
+                <button class="btn-secondary w-full" onclick="viewLogs()">View Logs</button>
+            </div>
+        </div>
+        
+        <!-- System Status -->
+        <div class="card">
+            <h2 class="text-lg font-semibold mb-4">System Status</h2>
+            <div class="space-y-2">
+                <div class="flex justify-between">
+                    <span class="text-muted">Database:</span>
+                    <span class="text-success">✓ Online</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-muted">Tor Service:</span>
+                    <span class="text-success">✓ Connected</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-muted">Security:</span>
+                    <span class="text-success">✓ Enabled</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Activity -->
+    <div class="card mt-6">
+        <h2 class="text-lg font-semibold mb-4">Recent Activity</h2>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-border">
+                        <th class="text-left py-2">Type</th>
+                        <th class="text-left py-2">User</th>
+                        <th class="text-left py-2">Action</th>
+                        <th class="text-left py-2">Time</th>
+                    </tr>
+                </thead>
+                <tbody id="activity-log">
+                    <tr>
+                        <td class="py-2 text-muted" colspan="4">Loading activity...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Configuration -->
+    <div class="card mt-6">
+        <h2 class="text-lg font-semibold mb-4">Site Configuration</h2>
+        
+        <form action="/admin/config" method="post">
+            <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Site Name</label>
+                    <input type="text" name="site_name" value="{{.Theme.Header.Title}}" class="form-input">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">Site Description</label>
+                    <input type="text" name="site_description" value="{{.Theme.Header.Subtitle}}" class="form-input">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">Max Post Length</label>
+                    <input type="number" name="max_post_length" value="1000" min="100" max="5000" class="form-input">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">Max Comment Length</label>
+                    <input type="number" name="max_comment_length" value="500" min="50" max="2000" class="form-input">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">Registration Enabled</label>
+                    <select name="registration_enabled" class="form-input">
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">Link Previews Enabled</label>
+                    <select name="link_previews_enabled" class="form-input">
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="mt-6">
+                <button type="submit" class="btn">Save Configuration</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Load site statistics
+async function loadStats() {
+    try {
+        const response = await fetch('/admin/api/stats');
+        const stats = await response.json();
+        
+        document.getElementById('total-users').textContent = stats.users || '0';
+        document.getElementById('total-posts').textContent = stats.posts || '0';
+        document.getElementById('total-comments').textContent = stats.comments || '0';
+    } catch (error) {
+        console.error('Failed to load stats:', error);
+    }
+}
+
+// Load recent activity
+async function loadActivity() {
+    try {
+        const response = await fetch('/admin/api/activity');
+        const activity = await response.json();
+        
+        const tbody = document.getElementById('activity-log');
+        tbody.innerHTML = '';
+        
+        if (activity.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="py-2 text-muted">No recent activity</td></tr>';
+            return;
+        }
+        
+        activity.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="py-2">${item.type}</td>
+                <td class="py-2">${item.user || 'System'}</td>
+                <td class="py-2">${item.action}</td>
+                <td class="py-2 text-muted">${new Date(item.time).toLocaleString()}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    } catch (error) {
+        console.error('Failed to load activity:', error);
+    }
+}
+
+function exportData() {
+    if (confirm('Export all site data? This may take a while for large sites.')) {
+        window.location.href = '/admin/export';
+    }
+}
+
+function viewLogs() {
+    window.open('/admin/logs', '_blank');
+}
+
+// Load data on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadStats();
+    loadActivity();
+    
+    // Refresh every 30 seconds
+    setInterval(() => {
+        loadStats();
+        loadActivity();
+    }, 30000);
+});
+</script>
+{{end}}

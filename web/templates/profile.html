@@ -1,0 +1,133 @@
+{{define "content"}}
+<div class="card">
+    <h1 class="text-2xl font-bold mb-6">Profile</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+            <h2 class="text-lg font-semibold mb-4">Account Information</h2>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-sm font-medium text-muted">Account ID</label>
+                    <p class="font-mono text-lg">{{.User.ID}}</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-muted">Display Name</label>
+                    <p>{{.User.DisplayName}}</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-muted">Account Type</label>
+                    <p>{{if .User.IsAdmin}}Administrator{{else}}User{{end}}</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-muted">Member Since</label>
+                    <p>{{.User.CreatedAt.Format "January 2, 2006"}}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div>
+            <h2 class="text-lg font-semibold mb-4">Security Settings</h2>
+            
+            <div class="space-y-4">
+                <div class="p-4 border border-border rounded">
+                    <h3 class="font-medium mb-2">Change Password</h3>
+                    <p class="text-muted text-sm mb-3">Update your account password for security.</p>
+                    <button class="btn" onclick="showPasswordForm()">Change Password</button>
+                </div>
+                
+                <div class="p-4 border border-border rounded">
+                    <h3 class="font-medium mb-2">Recovery Phrase</h3>
+                    <p class="text-muted text-sm mb-3">Generate a new recovery phrase if needed.</p>
+                    <button class="btn-secondary" onclick="showRecoveryForm()">Update Recovery</button>
+                </div>
+                
+                <div class="p-4 border border-error rounded">
+                    <h3 class="font-medium mb-2 text-error">Danger Zone</h3>
+                    <p class="text-muted text-sm mb-3">Permanently delete your account and all data.</p>
+                    <button class="btn-danger" onclick="confirmDelete()">Delete Account</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden forms for actions -->
+<div id="password-form" class="card mt-6 hidden">
+    <h2 class="text-lg font-semibold mb-4">Change Password</h2>
+    <form action="/profile/password" method="post">
+        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+        
+        <input type="password" name="current_password" placeholder="Current Password" class="form-input" required>
+        <input type="password" name="new_password" placeholder="New Password" class="form-input" minlength="8" required>
+        <input type="password" name="confirm_password" placeholder="Confirm New Password" class="form-input" required>
+        
+        <div class="flex space-x-2">
+            <button type="submit" class="btn">Update Password</button>
+            <button type="button" class="btn-secondary" onclick="hidePasswordForm()">Cancel</button>
+        </div>
+    </form>
+</div>
+
+<div id="recovery-form" class="card mt-6 hidden">
+    <h2 class="text-lg font-semibold mb-4">Update Recovery Phrase</h2>
+    <form action="/profile/recovery" method="post">
+        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+        
+        <input type="password" name="current_password" placeholder="Current Password" class="form-input" required>
+        
+        <div class="flex space-x-2">
+            <button type="submit" class="btn">Generate New Recovery Phrase</button>
+            <button type="button" class="btn-secondary" onclick="hideRecoveryForm()">Cancel</button>
+        </div>
+    </form>
+    
+    <div class="mt-4 p-4 bg-opacity-20" style="background-color: var(--color-warning);">
+        <p class="text-sm">
+            <strong>Warning:</strong> Generating a new recovery phrase will invalidate your current one. 
+            Make sure to save the new phrase securely.
+        </p>
+    </div>
+</div>
+
+<script>
+function showPasswordForm() {
+    document.getElementById('password-form').classList.remove('hidden');
+}
+
+function hidePasswordForm() {
+    document.getElementById('password-form').classList.add('hidden');
+}
+
+function showRecoveryForm() {
+    document.getElementById('recovery-form').classList.remove('hidden');
+}
+
+function hideRecoveryForm() {
+    document.getElementById('recovery-form').classList.add('hidden');
+}
+
+function confirmDelete() {
+    if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+        if (confirm('This will permanently delete all your posts and comments. Are you absolutely sure?')) {
+            // Create and submit delete form
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/profile/delete';
+            
+            const csrf = document.createElement('input');
+            csrf.type = 'hidden';
+            csrf.name = 'csrf_token';
+            csrf.value = '{{.CSRFToken}}';
+            form.appendChild(csrf);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+}
+</script>
+{{end}}

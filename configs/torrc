@@ -1,0 +1,38 @@
+# Tor configuration for Orc Social hidden service
+# This file should be appended to your main torrc or included
+
+# Data directory (adjust path as needed)
+DataDirectory /var/lib/tor
+
+# Hidden service configuration for Orc Social
+HiddenServiceDir /var/lib/tor/orc-social/
+HiddenServicePort 443 127.0.0.1:8080
+
+# Security settings
+HiddenServiceVersion 3
+HiddenServiceSingleHopMode 0
+HiddenServiceNonAnonymousMode 0
+
+# Performance and security options
+CircuitBuildTimeout 30
+KeepalivePeriod 60
+NewCircuitPeriod 30
+MaxCircuitDirtiness 600
+
+# Disable client connections to clearnet
+ExitPolicy reject *:*
+
+# Logging (adjust as needed)
+Log notice file /var/log/tor/notices.log
+Log warn file /var/log/tor/warnings.log
+
+# Additional security
+DisableDebuggerAttachment 1
+SafeLogging 1
+
+# Circuit preferences  
+StrictNodes 1
+FascistFirewall 1
+
+# Client authorization (uncomment to enable)
+# HiddenServiceAuthorizeClient stealth client1,client2

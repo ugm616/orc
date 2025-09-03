@@ -1,0 +1,36 @@
+{{define "content"}}
+<div class="card">
+    <h1 class="text-2xl font-bold mb-6">Login</h1>
+    
+    <form action="/login" method="post">
+        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+        
+        <div class="mb-4">
+            <label for="account_id" class="block text-sm font-medium mb-2">Account ID</label>
+            <input type="text" id="account_id" name="account_id" class="form-input" 
+                   placeholder="Your 12-digit account ID" pattern="[0-9]{12}" maxlength="12" required>
+            <p class="text-muted text-sm">Enter your 12-digit account ID</p>
+        </div>
+        
+        <div class="mb-6">
+            <label for="password" class="block text-sm font-medium mb-2">Password</label>
+            <input type="password" id="password" name="password" class="form-input" 
+                   placeholder="Your password" required>
+        </div>
+        
+        <button type="submit" class="btn w-full">Login</button>
+    </form>
+    
+    <div class="mt-6 p-4 bg-opacity-20" style="background-color: var(--color-secondary);">
+        <h3 class="font-bold mb-2">🔐 Account Recovery</h3>
+        <p class="text-sm">
+            Lost your account details? Use your recovery phrase to regain access.
+            Contact the administrator if you've lost both your account ID and recovery phrase.
+        </p>
+    </div>
+    
+    <div class="mt-4 text-center">
+        <p class="text-muted">Don't have an account? <a href="/signup" class="text-primary hover:underline">Sign up here</a></p>
+    </div>
+</div>
+{{end}}

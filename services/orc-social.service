@@ -1,0 +1,45 @@
+[Unit]
+Description=Orc Social - Privacy-First Social Network
+After=network.target tor.service
+Requires=tor.service
+
+[Service]
+Type=simple
+User=orcsocial
+Group=orcsocial
+WorkingDirectory=/opt/orc-social
+ExecStart=/opt/orc-social/orc-social
+Restart=always
+RestartSec=10
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/orc-social/data /opt/orc-social/configs
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+MemoryDenyWriteExecute=true
+LockPersonality=true
+
+# Network restrictions
+PrivateNetwork=false
+RestrictAddressFamilies=AF_INET AF_INET6
+IPAddressDeny=any
+IPAddressAllow=127.0.0.1/8
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=32768
+
+# Environment
+Environment=ORC_BIND_ADDR=127.0.0.1:8080
+Environment=ORC_DB_PATH=/opt/orc-social/data/orc.db
+Environment=ORC_CONFIG_PATH=/opt/orc-social/configs
+
+[Install]
+WantedBy=multi-user.target

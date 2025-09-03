@@ -1,0 +1,46 @@
+{
+  "colors": {
+    "primary": "#6366f1",
+    "secondary": "#8b5cf6",
+    "background": "#0f172a",
+    "surface": "#1e293b",
+    "text": "#f8fafc",
+    "textMuted": "#94a3b8",
+    "border": "#334155",
+    "success": "#10b981",
+    "warning": "#f59e0b",
+    "error": "#ef4444"
+  },
+  "typography": {
+    "fontFamily": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif",
+    "fontSize": "16px",
+    "lineHeight": "1.6"
+  },
+  "layout": {
+    "maxWidth": "800px",
+    "spacing": "1rem",
+    "borderRadius": "0.5rem",
+    "shadowBase": "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+    "shadowLg": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"
+  },
+  "header": {
+    "showLogo": false,
+    "logoPath": "",
+    "title": "Orc Social",
+    "subtitle": "Privacy-First Social Network",
+    "layout": "center"
+  },
+  "footer": {
+    "text": "Powered by Orc Social",
+    "links": [
+      {
+        "text": "Privacy",
+        "url": "/privacy"
+      },
+      {
+        "text": "Terms",
+        "url": "/terms"
+      }
+    ]
+  }
+}
